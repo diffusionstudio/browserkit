@@ -21,3 +21,5 @@ server.on('upgrade', wsserver);
 server.listen(env.PORT, async () => {
   console.log(`Server running on port ${env.PORT}`);
 });
+
+import('./metrics').then(module => module.default());

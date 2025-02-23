@@ -18,9 +18,11 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
+    "@google-cloud/monitoring": "^4.1.0",
     "@supabase/supabase-js": "^2.48.1",
     "express": "^4.21.2",
     "puppeteer-core": "^24.2.1",
+    "systeminformation": "^5.25.11",
     "uuid": "^11.1.0",
     "ws": "^8.18.0"
   }
