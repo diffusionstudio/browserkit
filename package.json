@@ -1,0 +1,27 @@
+{
+  "name": "browserkit",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "serve": "tsx --env-file=.env src/app.ts",
+    "keygen": "tsx keygen.ts",
+    "gpuinfo": "tsx capture-gpu.ts"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.2.0",
+    "@types/ws": "^8.5.13",
+    "esbuild": "^0.24.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.48.1",
+    "express": "^4.21.2",
+    "puppeteer-core": "^24.2.1",
+    "uuid": "^11.1.0",
+    "ws": "^8.18.0"
+  }
+}

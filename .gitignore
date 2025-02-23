@@ -1,0 +1,4 @@
+node_modules
+.env
+screenshot.png
+.DS_Store
