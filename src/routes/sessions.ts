@@ -1,8 +1,13 @@
 import { Request, Response } from "express";
 import { sessions } from "../sessions";
+import { MAX_BROWSER_INSTANCES } from "../environment";
 
 export function GET(_req: Request, res: Response) {
-  res.status(200).json({ count: sessions.size, sessions: Array.from(sessions.keys()) });
+  res.status(200).json({ 
+    count: sessions.size,
+    sessions: Array.from(sessions.keys()),
+    capacity: MAX_BROWSER_INSTANCES,
+  });
 }
 
 export async function DELETE(req: Request, res: Response) {
