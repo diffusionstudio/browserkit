@@ -15,7 +15,7 @@ if (env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY) {
     }
   );
 } else if (!env.API_KEY) {
-  throw new Error('Missing environment variables. API_KEY or SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.');
+  console.error('Missing environment variables. API_KEY or SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.');
 }
 
 export async function validateApiKey(key: string): Promise<boolean> {
