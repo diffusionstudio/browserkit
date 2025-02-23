@@ -14,7 +14,7 @@ export default async function (request: IncomingMessage, socket: Socket, head: B
   const wss = new WebSocketServer({ noServer: true });
   const { searchParams } = new URL(request.url!, `http://${request.headers.host}`);
   const apiKey = searchParams.get('token');
-  const timeoutMinutes = parseInt(searchParams.get('timeout') || '5', 10);
+  const timeoutMinutes = parseInt(searchParams.get('timeout') || '5');
   console.log('Starting session:', sessionId, 'with timeout:', timeoutMinutes);
 
   if (!apiKey || !(await validateApiKey(apiKey))) {

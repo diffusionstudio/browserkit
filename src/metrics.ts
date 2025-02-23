@@ -1,5 +1,5 @@
 import monitoring from '@google-cloud/monitoring';
-import { getSystemInfo } from './lib/systeminfo';
+import { getSystemInfo, getInstanceLabels } from './lib/systeminfo';
 import * as env from './environment';
 import { sessions } from './sessions';
 
@@ -12,7 +12,10 @@ export default async function publish() {
     return;
   }
 
-  const systemInfo = await getSystemInfo();
+  const [systemInfo, labels] = await Promise.all([
+    getSystemInfo(),
+    getInstanceLabels(),
+  ]);
 
   const metrics = [
     {
@@ -40,13 +43,13 @@ export default async function publish() {
           type: 'gce_instance',
           labels: {
             project_id: env.GCP_PROJECT_ID || '',
-            ...systemInfo.labels,
+            ...labels,
           },
         },
         points: [{
           interval: {
             endTime: {
-              seconds: systemInfo.timestamp.seconds,
+              seconds: Date.now() / 1000,
             },
           },
           value: {
