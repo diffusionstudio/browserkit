@@ -8,7 +8,7 @@ const client = new monitoring.MetricServiceClient();
 // Metrics Publishing Function
 export default async function publish() {
   if (!env.GCP_PROJECT_ID) {
-    console.log('GCP_PROJECT_ID is not set, skipping metrics publishing');
+    console.log('GCP project ID is not set, skipping metrics publishing');
     return;
   }
 
