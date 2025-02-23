@@ -5,7 +5,8 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "serve": "tsx --env-file=.env src/app.ts",
+    "dev": "tsx --watch --env-file=.env src/app.ts",
+    "serve": "tsx src/app.ts",
     "keygen": "tsx keygen.ts",
     "gpuinfo": "tsx capture-gpu.ts"
   },
