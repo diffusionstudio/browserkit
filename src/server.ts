@@ -24,6 +24,14 @@ export default async function (request: IncomingMessage, socket: Socket, head: B
     return;
   }
 
+  // Check if we're at capacity
+  if (sessions.size >= env.MAX_BROWSER_INSTANCES) {
+    console.log('Service at capacity');
+    socket.write('HTTP/1.1 503 Service Unavailable\r\nRetry-After: 60\r\n\r\n');
+    socket.destroy();
+    return;
+  }
+
   const browser = await puppeteer.launch({
     executablePath: env.CHROME_PATH,
     headless: true,
