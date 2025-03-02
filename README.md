@@ -1,9 +1,10 @@
-# BrowserKit
+# Browserkit
+This server is intended to be run on GCP VM instances.
 
-Example environment file:
+## Setup
 
 ```
-API_KEY="run-npm-run-keygen-to-generate-api-key"
-CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+cp .env.example .env
 ```
 
+Edit the `.env` file with your own values.
