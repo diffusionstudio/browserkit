@@ -7,6 +7,7 @@ import * as browsers_id from "./routes/browsers/[id]";
 import * as browsers_id_tabs from "./routes/browsers/[id]/tabs";
 import * as health from "./routes/health";
 import * as env from "./environment";
+import { logger } from "./logger";
 
 import './utilization';
 import './realtime';
@@ -25,5 +26,5 @@ server.on('upgrade', wsserver);
  * Start the HTTP/WebSocket server
  */
 server.listen(env.PORT, async () => {
-  console.log(`Server running on port ${env.PORT}`);
+  logger.info(`Server running on port ${env.PORT}`);
 });

@@ -2,6 +2,7 @@ import monitoring from '@google-cloud/monitoring';
 
 import { METADATA_URL, METADATA_HEADERS } from './constants';
 import { GCP_PROJECT_ID } from './environment';
+import { logger } from './logger';
 
 const client = new monitoring.MetricServiceClient();
 
@@ -11,7 +12,7 @@ const client = new monitoring.MetricServiceClient();
  */
 export async function report(metrics: { type: string, value: number | undefined }[]) {
   if (!GCP_PROJECT_ID) {
-    console.log('GCP project ID is not set, skipping metrics publishing');
+    logger.info('GCP project ID is not set, skipping metrics publishing');
     return;
   }
   
@@ -42,9 +43,9 @@ export async function report(metrics: { type: string, value: number | undefined 
         }],
       })),
     });
-    console.log('Done writing time series data.', result);
+    logger.info('Done writing time series data.', result);
   } catch (error) {
-    console.error('Error writing time series data.', error);
+    logger.error('Error writing time series data.', error);
   }
 }
 

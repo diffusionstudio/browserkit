@@ -1,6 +1,6 @@
-import { report } from "./monitoring";
-
 import si from 'systeminformation';
+
+import { report } from "./monitoring";
 
 /**
  * Report GPU utilization metrics to Google Cloud Monitoring

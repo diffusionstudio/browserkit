@@ -1,4 +1,4 @@
-import { supabase } from "./lib/supabase";
+import { supabase } from "./supabase";
 import { browsers } from "./browser";
 
 type BrowserUpdate = {

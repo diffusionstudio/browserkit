@@ -1,10 +1,11 @@
 import WebSocket, { WebSocketServer } from 'ws';
-
-import { getUser } from './lib/supabase';
 import { IncomingMessage } from 'http';
 import { Socket } from 'net';
+
+import { getUser } from './supabase';
 import { Timeout } from './timeout';
 import { Browser } from './browser';
+import { logger } from './logger';
 
 /**
  * Handle a WebSocket upgrade request
@@ -20,7 +21,7 @@ export default async function (request: IncomingMessage, socket: Socket, head: B
   const browser = new Browser(user);
 
   if (!user) {
-    console.log('Unauthorized request');
+    logger.info('Unauthorized request');
     socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
     socket.destroy();
     return;
@@ -29,7 +30,7 @@ export default async function (request: IncomingMessage, socket: Socket, head: B
   await browser.init();
 
   if (!browser.instance) {
-    console.error('Browser instance not initialized');
+    logger.error('Browser instance not initialized');
     socket.write('HTTP/1.1 500 Internal Server Error\r\n\r\n');
     socket.destroy();
     return;
@@ -64,7 +65,7 @@ export default async function (request: IncomingMessage, socket: Socket, head: B
         ws.close();
       });
     } catch (e) {
-      console.error('Error initializing WebSocket:', e);
+      logger.error('Error initializing WebSocket:', e);
       browser.close();
     }
   });

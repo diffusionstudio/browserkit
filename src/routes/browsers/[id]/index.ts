@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getUser, supabase } from "../../../lib/supabase";
+import { getUser, supabase } from "../../../supabase";
 
 export async function DELETE(req: Request, res: Response) {
   const browserId = req.params['id'];
