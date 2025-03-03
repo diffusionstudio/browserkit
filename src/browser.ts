@@ -123,7 +123,7 @@ export class Browser {
   private async handleUtilizationReport() {
     return await report([{
       type: 'custom.googleapis.com/browser_utilization',
-      value: browsers.size / MAX_BROWSER_INSTANCES,
+      value: Math.round(browsers.size * 100 / MAX_BROWSER_INSTANCES),
     }]);
   }
 }
