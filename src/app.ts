@@ -5,7 +5,9 @@ import wsserver from "./websocket";
 import * as browsers from "./routes/browsers";
 import * as health from "./routes/health";
 import * as env from "./environment";
+
 import './utilization';
+import './realtime';
 
 export const app = express();
 export const server = http.createServer(app);

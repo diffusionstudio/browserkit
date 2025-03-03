@@ -73,8 +73,8 @@ export class Browser {
         .eq('browser', this.id)
         .then(res => res.error && console.error('Error updating browser tabs:', res.error));
 
-      browsers.delete(this.id);
       this.instance = undefined;
+      browsers.delete(this.id);
       this.handleUtilizationReport();
     }
   }

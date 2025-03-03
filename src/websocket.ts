@@ -35,29 +35,38 @@ export default async function (request: IncomingMessage, socket: Socket, head: B
     return;
   }
 
-  wss.handleUpgrade(request, socket, head, (ws: WebSocket) => {
-    const browserWS = new WebSocket(browser.instance!.wsEndpoint());
-    const timeout = new Timeout(timeoutMinutes, [ws, browserWS, browser]);
+  wss.handleUpgrade(request, socket, head, async (ws: WebSocket) => {
+    const browserws = new WebSocket(browser.instance!.wsEndpoint());
+    const timeout = new Timeout(timeoutMinutes, [browser, ws, browserws]);
 
-    whenReady(browserWS).then(() => {
+    try {
+      await whenReady(browserws);
+
       // Forward messages between client and browser
       ws.on('message', (message: WebSocket.Data) => {
-        browserWS.send(message.toString());
+        browserws.send(message.toString());
         timeout.reset(); // Reset timeout on activity
       });
 
       // Forward messages between browser and client
-      browserWS.on('message', (message: WebSocket.Data) => {
+      browserws.on('message', (message: WebSocket.Data) => {
         ws.send(message.toString());
         timeout.reset(); // Reset timeout on activity
       });
-    })
 
-    // Clean up the browser instance and timeout when the client disconnects
-    ws.on('close', timeout.terminate.bind(timeout));
+      // Clean up the browser instance and timeout when the client disconnects
+      ws.on('close', browserws.close);
 
-    // Clean up the browser instance and timeout when the browser disconnects
-    browserWS.on('close', timeout.terminate.bind(timeout));
+      // Clean up the browser instance and timeout when the browser disconnects
+      browserws.on('close', () => {
+        timeout.clear();
+        browser.close();
+        ws.close();
+      });
+    } catch (e) {
+      console.error('Error initializing WebSocket:', e);
+      browser.close();
+    }
   });
 }
 
@@ -67,11 +76,12 @@ export default async function (request: IncomingMessage, socket: Socket, head: B
  * @returns A promise that resolves when the WebSocket is ready
  */
 function whenReady(ws: WebSocket) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     if (ws.readyState == WebSocket.OPEN) {
       resolve(null);
     } else {
       ws.on('open', resolve);
+      ws.on('error', reject);
     }
   });
 }
