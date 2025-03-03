@@ -3,7 +3,7 @@ import puppeteer from 'puppeteer-core';
 (async () => {
   // Connect to the existing Chrome instance via WebSocket
   const browser = await puppeteer.connect({
-    browserWSEndpoint: 'ws://localhost:3000?token=run-npm-run-keygen-to-generate-api-key',
+    browserWSEndpoint: `ws://localhost:3000?token=${process.env.API_KEY}`,
   })
 
   // Create a new page

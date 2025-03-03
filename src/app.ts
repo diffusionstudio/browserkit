@@ -1,17 +1,24 @@
 import express from "express";
 import http from "http";
-import wsserver from "./server";
+import wsserver from "./websocket";
 
-import * as sessions from "./routes/sessions";
+import * as browsers from "./routes/browsers";
+import * as browsers_id from "./routes/browsers/[id]";
+import * as browsers_id_tabs from "./routes/browsers/[id]/tabs";
 import * as health from "./routes/health";
 import * as env from "./environment";
+import { logger } from "./logger";
+
+import './utilization';
+import './realtime';
 
 export const app = express();
 export const server = http.createServer(app);
 
 app.get('/health', health.GET);
-app.get('/sessions', sessions.GET);
-app.delete('/sessions/:id', sessions.DELETE);
+app.get('/v1/browsers', browsers.GET);
+app.get('/v1/browsers/:id/tabs', browsers_id_tabs.GET);
+app.delete('/v1/browsers/:id', browsers_id.DELETE);
 
 server.on('upgrade', wsserver);
 
@@ -19,7 +26,5 @@ server.on('upgrade', wsserver);
  * Start the HTTP/WebSocket server
  */
 server.listen(env.PORT, async () => {
-  console.log(`Server running on port ${env.PORT}`);
+  logger.info(`Server running on port ${env.PORT}`);
 });
-
-import('./metrics').then(module => module.default());
