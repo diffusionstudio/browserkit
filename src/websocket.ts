@@ -6,6 +6,12 @@ import { Socket } from 'net';
 import { Timeout } from './timeout';
 import { Browser } from './browser';
 
+/**
+ * Handle a WebSocket upgrade request
+ * @param request - The incoming request
+ * @param socket - The socket
+ * @param head - The head
+ */
 export default async function (request: IncomingMessage, socket: Socket, head: Buffer) {
   const wss = new WebSocketServer({ noServer: true });
   const { searchParams } = new URL(request.url!, `http://${request.headers.host}`);
@@ -33,7 +39,7 @@ export default async function (request: IncomingMessage, socket: Socket, head: B
     const browserWS = new WebSocket(browser.instance!.wsEndpoint());
     const timeout = new Timeout(timeoutMinutes, [ws, browserWS, browser]);
 
-    new Promise(resolve => browserWS.on('open', resolve)).then(() => {
+    whenReady(browserWS).then(() => {
       // Forward messages between client and browser
       ws.on('message', (message: WebSocket.Data) => {
         browserWS.send(message.toString());
@@ -52,5 +58,20 @@ export default async function (request: IncomingMessage, socket: Socket, head: B
 
     // Clean up the browser instance and timeout when the browser disconnects
     browserWS.on('close', timeout.terminate.bind(timeout));
+  });
+}
+
+/**
+ * Wait for a WebSocket to be ready
+ * @param ws - The WebSocket to wait for
+ * @returns A promise that resolves when the WebSocket is ready
+ */
+function whenReady(ws: WebSocket) {
+  return new Promise(resolve => {
+    if (ws.readyState == WebSocket.OPEN) {
+      resolve(null);
+    } else {
+      ws.on('open', resolve);
+    }
   });
 }

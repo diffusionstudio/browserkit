@@ -1,9 +1,9 @@
 export class Timeout {
   private inactivityTimeout?: NodeJS.Timeout;
-  private deps: { close: () => void }[];
+  private deps: { close(): Promise<void> | void }[];
   private timeout: number;
 
-  constructor(timeout: number, deps: { close: () => void }[]) {
+  constructor(timeout: number, deps: { close(): Promise<void> | void }[]) {
     this.timeout = timeout;
     this.deps = deps;
     this.reset();
@@ -13,15 +13,17 @@ export class Timeout {
     if (this.inactivityTimeout) {
       clearTimeout(this.inactivityTimeout)
     };
-    
+
     this.inactivityTimeout = setTimeout(
-      this.terminate.bind(this), 
+      this.terminate.bind(this),
       this.timeout * 60 * 1000
     );
   }
 
-  public terminate() {
-    this.deps.forEach(dep => dep.close());
+  public async terminate() {
+    for (const dep of this.deps) {
+      await dep.close();
+    }
 
     if (this.inactivityTimeout) {
       clearTimeout(this.inactivityTimeout)

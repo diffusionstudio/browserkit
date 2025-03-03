@@ -1,6 +1,6 @@
 import express from "express";
 import http from "http";
-import wsserver from "./server";
+import wsserver from "./websocket";
 
 import * as browsers from "./routes/browsers";
 import * as health from "./routes/health";

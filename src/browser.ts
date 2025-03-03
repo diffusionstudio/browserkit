@@ -59,7 +59,7 @@ export class Browser {
     } catch (e) {
       console.error('Error closing browser:', e);
     } finally {
-      supabase
+      await supabase
         .from('browsers')
         .update({ closed_at: new Date().toISOString() })
         .is('closed_at', null)
@@ -67,7 +67,7 @@ export class Browser {
         .single()
         .then(res => res.error && console.error('Error updating browser closed_at:', res.error));
 
-      supabase
+      await supabase
         .from('browser_tabs')
         .update([{ browser: this.id, closed_at: new Date().toISOString() }])
         .eq('browser', this.id)
