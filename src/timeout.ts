@@ -14,13 +14,15 @@ export class Timeout {
       clearTimeout(this.inactivityTimeout)
     };
     
-    this.inactivityTimeout = setTimeout(async () => {
-      console.log(`Browser closed due to inactivity after ${this.timeout} minutes`);
-      this.deps.forEach(dep => dep.close());
-    }, this.timeout * 60 * 1000); // Convert minutes to milliseconds
+    this.inactivityTimeout = setTimeout(
+      this.terminate.bind(this), 
+      this.timeout * 60 * 1000
+    );
   }
 
-  public clear() {
+  public terminate() {
+    this.deps.forEach(dep => dep.close());
+
     if (this.inactivityTimeout) {
       clearTimeout(this.inactivityTimeout)
     };

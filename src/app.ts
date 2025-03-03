@@ -5,6 +5,7 @@ import wsserver from "./server";
 import * as sessions from "./routes/sessions";
 import * as health from "./routes/health";
 import * as env from "./environment";
+import './utilization';
 
 export const app = express();
 export const server = http.createServer(app);
@@ -21,5 +22,3 @@ server.on('upgrade', wsserver);
 server.listen(env.PORT, async () => {
   console.log(`Server running on port ${env.PORT}`);
 });
-
-import('./metrics').then(module => module.default());

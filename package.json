@@ -8,12 +8,12 @@
     "dev": "tsx --watch --env-file=.env src/app.ts",
     "serve": "tsx src/app.ts",
     "keygen": "tsx keygen.ts",
-    "gpuinfo": "tsx capture-gpu.ts"
+    "gpuinfo": "tsx --env-file=.env capture-gpu.ts"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^22.2.0",
-    "@types/ws": "^8.5.13",
+    "@types/ws": "^8.5.14",
     "esbuild": "^0.24.2",
     "tsx": "^4.19.2",
     "typescript": "^5.5.3"
