@@ -2,7 +2,7 @@ import express from "express";
 import http from "http";
 import wsserver from "./server";
 
-import * as sessions from "./routes/sessions";
+import * as browsers from "./routes/browsers";
 import * as health from "./routes/health";
 import * as env from "./environment";
 import './utilization';
@@ -11,8 +11,8 @@ export const app = express();
 export const server = http.createServer(app);
 
 app.get('/health', health.GET);
-app.get('/sessions', sessions.GET);
-app.delete('/sessions/:id', sessions.DELETE);
+app.get('/v1/browsers', browsers.GET);
+app.delete('/v1/browsers/:id', browsers.DELETE);
 
 server.on('upgrade', wsserver);
 

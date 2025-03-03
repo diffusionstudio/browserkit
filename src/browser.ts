@@ -37,11 +37,16 @@ export class Browser {
 
       this.instance.on('targetcreated', this.handlePageCreated.bind(this));
       console.log('Initialized browser:', this.id);
-    } catch (e) {
-      console.error('Error initializing browser:', e);
-    } finally {
       browsers.set(this.id, this);
       this.handleUtilizationReport();
+    } catch (e) {
+      console.error('Error initializing browser:', e);
+      // Cleanup database entry if browser failed to initialize
+      await supabase
+        .from('browsers')
+        .delete()
+        .eq('id', this.id)
+        .then(res => res.error && console.error('Error cleaning up browser entry:', res.error));
     }
   }
 
@@ -54,27 +59,19 @@ export class Browser {
     } catch (e) {
       console.error('Error closing browser:', e);
     } finally {
-      let error = await supabase
+      supabase
         .from('browsers')
         .update({ closed_at: new Date().toISOString() })
         .is('closed_at', null)
         .eq('id', this.id)
         .single()
-        .then(res => res.error);
+        .then(res => res.error && console.error('Error updating browser closed_at:', res.error));
 
-      if (error) {
-        console.error('Error updating browser closed_at:', error);
-      }
-
-      error = await supabase
+      supabase
         .from('browser_tabs')
         .update([{ browser: this.id, closed_at: new Date().toISOString() }])
         .eq('browser', this.id)
-        .then(res => res.error);
-
-      if (error) {
-        console.error('Error updating browser tabs:', error);
-      }
+        .then(res => res.error && console.error('Error updating browser tabs:', res.error));
 
       browsers.delete(this.id);
       this.instance = undefined;
@@ -97,22 +94,18 @@ export class Browser {
       console.error('Error creating tab database entry:', error);
     } else {
       this.pages.push(data.id);
+      page?.on('close', () => this.handlePageClosed(data.id)());
     }
-
-    page?.on('close', () => this.handlePageClosed(data.id)());
   }
 
   private handlePageClosed(tabId: string) {
     return async () => {
-      const { error } = await supabase
+      await supabase
         .from('browser_tabs')
         .update({ closed_at: new Date().toISOString() })
         .eq('id', tabId)
-        .single();
-
-      if (error) {
-        console.error('Error updating tab closed_at:', error);
-      }
+        .single()
+        .then(res => res.error && console.error('Error updating tab closed_at:', res.error));
 
       this.pages = this.pages.filter(id => id !== tabId);
     }

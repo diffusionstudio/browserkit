@@ -16,8 +16,8 @@ export const supabase = createClient(
   }
 )
 
-export async function getUser(token?: string | null): Promise<string | null> {
-  if (!token) return null;
+export async function getUser(token?: string | string[] | null): Promise<string | null> {
+  if (!token || Array.isArray(token)) return null;
 
   const { data, error } = await supabase
     .from('api_keys')
