@@ -4,6 +4,7 @@ import { CHROME_SECURITY_FLAGS } from './constants';
 import { report } from './monitoring';
 import { v4 as uuid } from 'uuid';
 import { supabase } from './lib/supabase';
+import fs from 'fs';
 
 export const browsers = new Map<string, Browser>();
 
@@ -12,6 +13,7 @@ export class Browser {
   public readonly id: string = uuid();
   public instance?: PuppeteerBrowser;
   public pages: string[] = [];
+  public dataDir: string = `/tmp/browser-session/${this.id.replace(/-/g, '')}`;
 
   public constructor(user?: string | null) {
     this.user = user;
@@ -32,7 +34,11 @@ export class Browser {
       this.instance = await puppeteer.launch({
         executablePath: CHROME_PATH,
         headless: true,
-        args: [...CHROME_SECURITY_FLAGS, ...CHROME_ARGS],
+        args: [
+          ...CHROME_SECURITY_FLAGS,
+          ...CHROME_ARGS,
+          `--user-data-dir=${this.dataDir}`,
+        ],
       });
 
       this.instance.on('targetcreated', this.handlePageCreated.bind(this));
@@ -55,7 +61,8 @@ export class Browser {
 
     try {
       await this.instance.close();
-      console.log('Closed browser:', this.id);
+      await fs.promises.rm(this.dataDir, { recursive: true, force: true });
+      console.log('Closed browser and removed data directory:', this.id);
     } catch (e) {
       console.error('Error closing browser:', e);
     } finally {
