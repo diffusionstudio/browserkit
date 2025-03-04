@@ -43,7 +43,6 @@ export async function report(metrics: { type: string, value: number | undefined 
         }],
       })),
     });
-    logger.info('Done writing time series data.', result);
   } catch (error) {
     logger.error('Error writing time series data.', error);
   }
