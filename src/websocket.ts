@@ -3,7 +3,6 @@ import { IncomingMessage } from 'http';
 import { Socket } from 'net';
 
 import { getUser } from './supabase';
-import { Timeout } from './timeout';
 import { Browser } from './browser';
 import { logger } from './logger';
 
@@ -16,7 +15,6 @@ import { logger } from './logger';
 export default async function (request: IncomingMessage, socket: Socket, head: Buffer) {
   const wss = new WebSocketServer({ noServer: true });
   const { searchParams } = new URL(request.url!, `http://${request.headers.host}`);
-  const timeoutMinutes = parseInt(searchParams.get('timeout') || '5');
   const user = await getUser(searchParams.get('token'));
   const browser = new Browser(user);
 
@@ -38,7 +36,6 @@ export default async function (request: IncomingMessage, socket: Socket, head: B
 
   wss.handleUpgrade(request, socket, head, async (ws: WebSocket) => {
     const browserws = new WebSocket(browser.instance!.wsEndpoint());
-    const timeout = new Timeout(timeoutMinutes, [browser, ws, browserws]);
 
     try {
       await whenReady(browserws);
@@ -46,22 +43,19 @@ export default async function (request: IncomingMessage, socket: Socket, head: B
       // Forward messages between client and browser
       ws.on('message', (message: WebSocket.Data) => {
         browserws.send(message.toString());
-        timeout.reset(); // Reset timeout on activity
       });
 
       // Forward messages between browser and client
       browserws.on('message', (message: WebSocket.Data) => {
         ws.send(message.toString());
-        timeout.reset(); // Reset timeout on activity
       });
 
       // Clean up the browser instance and timeout when the client disconnects
       ws.on('close', browserws.close);
 
       // Clean up the browser instance and timeout when the browser disconnects
-      browserws.on('close', () => {
-        timeout.clear();
-        browser.close();
+      browserws.on('close', async () => {
+        await browser.close();
         ws.close();
       });
     } catch (e) {
